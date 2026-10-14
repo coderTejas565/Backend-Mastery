@@ -4,3 +4,7 @@ node_modules/
 dist/
 build/
 *.log
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
