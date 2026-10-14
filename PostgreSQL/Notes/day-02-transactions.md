@@ -40,8 +40,8 @@ If reducing stock fails, the order and order item should also be rolled back.
 
 ## 3. COMMIT vs ROLLBACK
 
-* **COMMIT**: permanently applies the transaction.
-* **ROLLBACK**: cancels all changes made during the transaction.
+- **COMMIT**: permanently applies the transaction.
+- **ROLLBACK**: cancels all changes made during the transaction.
 
 ### Important Observation
 
@@ -121,13 +121,13 @@ await prisma.$transaction(async (tx) => {
   });
 
   if (!product) {
-    throw new Error("Product not found");
+    throw new Error('Product not found');
   }
 
   const order = await tx.orders.create({
     data: {
       user_id: userId,
-      status: "pending",
+      status: 'pending',
     },
   });
 
@@ -179,7 +179,7 @@ All operations belong to the same transaction when they must succeed or fail tog
 We intentionally added:
 
 ```ts
-throw new Error("Simulated failure");
+throw new Error('Simulated failure');
 ```
 
 after creating the order item.
@@ -211,12 +211,12 @@ WHERE user_id = 1;
 
 It helps identify:
 
-* Sequential scans
-* Index scans
-* Number of rows examined
-* Rows removed by filters
-* Query execution time
-* Query planning time
+- Sequential scans
+- Index scans
+- Number of rows examined
+- Rows removed by filters
+- Query execution time
+- Query planning time
 
 ## 9. Sequential Scan vs Index
 
@@ -274,9 +274,9 @@ An index can dramatically reduce the amount of data PostgreSQL needs to scan for
 
 But indexes are not free:
 
-* They consume storage.
-* Inserts/updates become more expensive.
-* Too many indexes can hurt write performance.
+- They consume storage.
+- Inserts/updates become more expensive.
+- Too many indexes can hurt write performance.
 
 ## 10. Connection Pool
 
@@ -299,7 +299,7 @@ PostgreSQL
 We configured:
 
 ```ts
-max: 2
+max: 2;
 ```
 
 and sent 5 concurrent database operations.
@@ -377,21 +377,21 @@ Error: timeout exceeded when trying to connect
 
 Pool pressure can happen because of:
 
-* Slow queries
-* Long-running transactions
-* Too many concurrent requests
-* Incorrect pool sizing
-* Connections not being released properly
+- Slow queries
+- Long-running transactions
+- Too many concurrent requests
+- Incorrect pool sizing
+- Connections not being released properly
 
 ### Production Fixes
 
-* Optimize slow queries.
-* Add appropriate indexes.
-* Keep transactions short.
-* Avoid unnecessary work while holding a connection.
-* Configure a sensible pool size.
-* Configure connection timeouts.
-* Monitor database latency and pool utilization.
+- Optimize slow queries.
+- Add appropriate indexes.
+- Keep transactions short.
+- Avoid unnecessary work while holding a connection.
+- Configure a sensible pool size.
+- Configure connection timeouts.
+- Monitor database latency and pool utilization.
 
 ## 12. Deadlocks
 
@@ -447,11 +447,11 @@ The second transaction may wait, but there is no circular dependency.
 
 ### Other Deadlock Prevention Techniques
 
-* Keep transactions short.
-* Acquire locks in a consistent order.
-* Avoid unnecessary locks.
-* Avoid doing slow external work inside transactions.
-* Handle deadlock errors and retry when appropriate.
+- Keep transactions short.
+- Acquire locks in a consistent order.
+- Avoid unnecessary locks.
+- Avoid doing slow external work inside transactions.
+- Handle deadlock errors and retry when appropriate.
 
 ## 14. Important Mental Models
 
@@ -505,15 +505,15 @@ PostgreSQL aborts one
 
 ## 15. Mistakes / Problems I Encountered
 
-* Initially used `SELECT pg_sleep(5)` with Prisma, which returned PostgreSQL's `void` type and caused a Prisma deserialization error.
-* Fixed it with:
+- Initially used `SELECT pg_sleep(5)` with Prisma, which returned PostgreSQL's `void` type and caused a Prisma deserialization error.
+- Fixed it with:
 
 ```sql
 SELECT pg_sleep(5)::text AS sleep_result;
 ```
 
-* Initially tried `connection_limit=2` in the database URL, but because the project uses Prisma 7 with `@prisma/adapter-pg`, the actual pool was controlled through the `PrismaPg` adapter.
-* Fixed the pool configuration with:
+- Initially tried `connection_limit=2` in the database URL, but because the project uses Prisma 7 with `@prisma/adapter-pg`, the actual pool was controlled through the `PrismaPg` adapter.
+- Fixed the pool configuration with:
 
 ```ts
 const adapter = new PrismaPg({
@@ -522,9 +522,9 @@ const adapter = new PrismaPg({
 });
 ```
 
-* Learned that a full connection pool does not automatically mean an error; requests can wait until a connection becomes available.
-* Added `connectionTimeoutMillis` to intentionally demonstrate actual pool exhaustion.
-* Created a real PostgreSQL deadlock using two database connections.
+- Learned that a full connection pool does not automatically mean an error; requests can wait until a connection becomes available.
+- Added `connectionTimeoutMillis` to intentionally demonstrate actual pool exhaustion.
+- Created a real PostgreSQL deadlock using two database connections.
 
 ## 16. Backend Connection
 
@@ -546,13 +546,13 @@ Locks / Indexes / Queries
 
 Examples:
 
-* E-commerce checkout → transaction + row locking
-* Inventory → concurrency control
-* Banking → transactions
-* High-traffic APIs → connection pools
-* Slow dashboards → indexes + EXPLAIN ANALYZE
-* Concurrent updates → locking
-* Complex transactions → deadlock prevention
+- E-commerce checkout → transaction + row locking
+- Inventory → concurrency control
+- Banking → transactions
+- High-traffic APIs → connection pools
+- Slow dashboards → indexes + EXPLAIN ANALYZE
+- Concurrent updates → locking
+- Complex transactions → deadlock prevention
 
 ## 17. Practice Questions
 
@@ -574,23 +574,23 @@ Examples:
 
 ## 18. Day 2 Status
 
-* [x] Transactions
-* [x] COMMIT / ROLLBACK
-* [x] Transaction atomicity
-* [x] Sequence gaps
-* [x] Row-level locking
-* [x] `SELECT ... FOR UPDATE`
-* [x] Concurrent transactions
-* [x] Prisma `$transaction()`
-* [x] Transaction rollback experiment
-* [x] `EXPLAIN ANALYZE`
-* [x] Sequential scan
-* [x] Index scan
-* [x] Index performance comparison
-* [x] Connection pools
-* [x] Pool contention
-* [x] Pool exhaustion
-* [x] Connection timeout
-* [x] Deadlock reproduction
-* [x] Deadlock resolution
-* [x] Consistent lock ordering
+- [x] Transactions
+- [x] COMMIT / ROLLBACK
+- [x] Transaction atomicity
+- [x] Sequence gaps
+- [x] Row-level locking
+- [x] `SELECT ... FOR UPDATE`
+- [x] Concurrent transactions
+- [x] Prisma `$transaction()`
+- [x] Transaction rollback experiment
+- [x] `EXPLAIN ANALYZE`
+- [x] Sequential scan
+- [x] Index scan
+- [x] Index performance comparison
+- [x] Connection pools
+- [x] Pool contention
+- [x] Pool exhaustion
+- [x] Connection timeout
+- [x] Deadlock reproduction
+- [x] Deadlock resolution
+- [x] Consistent lock ordering
